@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.widget.RemoteViews
-import io.github.invertium.bmsdash.R
+import io.github.invertium.bmsdash.gabriel.R
 
 class BmsWidgetProvider : AppWidgetProvider() {
 
