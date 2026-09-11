@@ -449,18 +449,22 @@ class BmsController extends Notifier<BmsState> {
     );
 
     _telemetrySubscription = session.basicInfo.listen(
-      (info) {
+      (info) async {
         if (!identical(_session, session)) {
           return;
         }
         final sample = TelemetrySample.fromBasicInfo(info, DateTime.now());
 
-        _widgetChannel.invokeMethod('updateWidget', {
-          'soc': sample.soc,
-          'voltage': sample.voltage,
-          'current': sample.current,
-          'power': sample.power,
-        });
+        try {
+          await _widgetChannel.invokeMethod('updateWidget', {
+            'soc': sample.soc,
+            'voltage': sample.voltage,
+            'current': sample.current,
+            'power': sample.power,
+          });
+        } catch (e) {
+          debugPrint('BMS widget update failed: $e');
+        }
         final history = appendCapped(
           state.history,
           sample,
