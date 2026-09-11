@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ble.dart';
@@ -11,6 +12,7 @@ import 'settings.dart';
 
 const _lastDeviceIdKey = 'last_device_id';
 const _lastDeviceNameKey = 'last_device_name';
+const _widgetChannel = MethodChannel('io.github.invertium.bmsdash/widget');
 
 /// Hard upper bound on retained telemetry samples regardless of the
 /// configured time window (4 h at one basic-info frame per second).
@@ -452,6 +454,13 @@ class BmsController extends Notifier<BmsState> {
           return;
         }
         final sample = TelemetrySample.fromBasicInfo(info, DateTime.now());
+
+        _widgetChannel.invokeMethod('updateWidget', {
+          'soc': sample.soc,
+          'voltage': sample.voltage,
+          'current': sample.current,
+          'power': sample.power,
+        });
         final history = appendCapped(
           state.history,
           sample,
